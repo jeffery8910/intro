@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自主學習計畫｜Horizontal Bento</title>
+  <style>
+    :root {
+      --bg: #efe6d6;
+      --bg-deep: #ddd0b9;
+      --paper: rgba(251, 247, 239, 0.82);
+      --paper-strong: rgba(255, 252, 246, 0.92);
+      --ink: #233126;
+      --muted: #67725f;
+      --forest: #234733;
+      --forest-soft: #48664d;
+      --moss: #798863;
+      --bark: #7d5638;
+      --bark-deep: #5e3e29;
+      --line: rgba(35, 49, 38, 0.12);
+      --glow: rgba(255, 240, 205, 0.7);
+      --shadow: 0 28px 80px rgba(69, 53, 35, 0.16);
+      --radius-xl: 34px;
+      --radius-lg: 26px;
+      --radius-md: 20px;
+      --content-width: min(1700px, calc(100vw - 36px));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background:
+        radial-gradient(circle at 8% 10%, rgba(121, 136, 99, 0.24), transparent 20%),
+        radial-gradient(circle at 88% 6%, rgba(125, 86, 56, 0.2), transparent 18%),
+        radial-gradient(circle at 50% 120%, rgba(35, 71, 51, 0.12), transparent 30%),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 12px, transparent 12px 26px),
+        linear-gradient(180deg, #f4ecde 0%, #e9dfcb 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 50px, rgba(94, 62, 41, 0.028) 50px 52px, transparent 52px 102px),
+        repeating-linear-gradient(0deg, transparent 0 72px, rgba(35, 71, 51, 0.025) 72px 74px, transparent 74px 148px);
+      mix-blend-mode: multiply;
+      opacity: 0.65;
+      animation: grainDrift 28s linear infinite;
+    }
+
+    h1, h2, h3, .label, .metric-value {
+      font-family: "Noto Serif TC", "PMingLiU", serif;
+      letter-spacing: 0.02em;
+    }
+
+    .board {
+      width: var(--content-width);
+      margin: 20px auto 34px;
+      padding: 18px;
+      border-radius: 40px;
+      background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.45), transparent 24%),
+        linear-gradient(180deg, rgba(255, 251, 244, 0.74), rgba(247, 240, 229, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, transparent 0 46%, rgba(255, 255, 255, 0.07) 46% 52%, transparent 52% 100%);
+      opacity: 0.6;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(16, minmax(0, 1fr));
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tile {
+      grid-column: span 16;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      background:
+        linear-gradient(180deg, var(--paper-strong), var(--paper));
+      border: 1px solid var(--line);
+      box-shadow: 0 16px 40px rgba(76, 58, 40, 0.08);
+      transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 52px rgba(76, 58, 40, 0.13);
+      border-color: rgba(35, 71, 51, 0.16);
+    }
+
+    .tile::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 0;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(121, 136, 99, 0.22), rgba(125, 86, 56, 0.42), rgba(35, 71, 51, 0.18));
+    }
+
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-9 { grid-column: span 9; }
+    .span-10 { grid-column: span 10; }
+    .span-11 { grid-column: span 11; }
+    .span-12 { grid-column: span 12; }
+    .span-16 { grid-column: span 16; }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      background: rgba(35, 71, 51, 0.08);
+      border: 1px solid rgba(35, 71, 51, 0.12);
+      color: var(--forest);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .label::after {
+      content: attr(data-note);
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      max-width: 240px;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: rgba(103, 114, 95, 0.82);
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2.4rem, 5vw, 4.6rem);
+      line-height: 1.04;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.55rem, 2vw, 2rem);
+      line-height: 1.18;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.82;
+      font-size: 0.98rem;
+    }
+
+    .hero {
+      min-height: 420px;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 78% 16%, rgba(255, 243, 214, 0.18), transparent 18%),
+        linear-gradient(135deg, rgba(24, 53, 39, 0.98), rgba(51, 82, 60, 0.95));
+      color: #f7f4ec;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 26px;
+      align-items: center;
+    }
+
+    .hero p {
+      max-width: 66ch;
+      color: rgba(247, 244, 236, 0.86);
+      font-size: 1rem;
+    }
+
+    .hero-copy {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .hero-chip {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-chip strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+      color: #fff3dc;
+    }
+
+    .hero-chip span {
+      display: block;
+      font-size: 0.88rem;
+      color: rgba(247, 244, 236, 0.82);
+      line-height: 1.6;
+    }
+
+    .hero-stage {
+      min-height: 320px;
+      padding: 10px;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 50% 26%, rgba(255, 244, 218, 0.14), transparent 26%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(125, 86, 56, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-stage svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 18px 28px rgba(10, 19, 14, 0.22));
+    }
+
+    .wood-ring {
+      transform-origin: center;
+      animation: ringSpin 26s linear infinite;
+    }
+
+    .wood-ring.alt {
+      animation-duration: 34s;
+      animation-direction: reverse;
+    }
+
+    .tree-core {
+      transform-origin: center 78%;
+      animation: sway 6.2s ease-in-out infinite;
+    }
+
+    .floating-seed {
+      animation: drift 6.6s ease-in-out infinite;
+    }
+
+    .floating-seed.alt {
+      animation-delay: -2.2s;
+      animation-duration: 8.1s;
+    }
+
+    .ribbon {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mini-card {
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(121, 136, 99, 0.1), rgba(255, 255, 255, 0.85));
+      border: 1px solid rgba(35, 71, 51, 0.1);
+      min-height: 152px;
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--bark-deep);
+      font-size: 1.16rem;
+      line-height: 1.3;
+    }
+
+    .mini-card p {
+      font-size: 0.92rem;
+      line-height: 1.68;
+    }
+
+    .lede {
+      font-size: 1.02rem;
+      color: var(--ink);
+    }
+
+    .quote-box {
+      margin-top: 14px;
+      padding: 16px 18px;
+      border-left: 4px solid rgba(125, 86, 56, 0.9);
+      border-radius: 0 18px 18px 0;
+      background: linear-gradient(90deg, rgba(125, 86, 56, 0.14), rgba(255, 255, 255, 0.24));
+      color: var(--ink);
+      line-height: 1.85;
+    }
+
+    .proof-grid,
+    .pain-grid,
+    .goal-grid,
+    .metric-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stack-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .row-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(232, 223, 208, 0.56), rgba(255, 255, 255, 0.78));
+      border: 1px solid rgba(35, 49, 38, 0.08);
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .row-card .head {
+      font-weight: 700;
+      color: var(--forest);
+    }
+
+    .proof-card,
+    .pain-card,
+    .goal-card,
+    .metric-card,
+    .role-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(244, 237, 227, 0.9));
+      border: 1px solid rgba(35, 49, 38, 0.08);
+      min-height: 170px;
+    }
+
+    .proof-card h3,
+    .pain-card h3,
+    .goal-card h3,
+    .metric-card h3,
+    .role-card h3 {
+      color: var(--bark-deep);
+    }
+
+    .role-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(35, 71, 51, 0.08);
+      color: var(--forest);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .role-card .person {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .role-card .role-focus {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--bark);
+      font-weight: 700;
+      font-size: 0.94rem;
+    }
+
+    .timeline-rail {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(121, 136, 99, 0.12), rgba(238, 228, 213, 0.66));
+      border: 1px solid rgba(35, 71, 51, 0.1);
+      overflow: hidden;
+    }
+
+    .timeline-line {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: stretch;
+      position: relative;
+    }
+
+    .timeline-line::before {
+      content: "";
+      position: absolute;
+      left: 28px;
+      top: 18px;
+      bottom: 18px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(35, 71, 51, 0.24), rgba(121, 136, 99, 0.14));
+      border-radius: 999px;
+    }
+
+    .timeline-step {
+      position: relative;
+      padding: 18px 18px 18px 64px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(35, 49, 38, 0.08);
+      min-height: 0;
+      z-index: 1;
+    }
+
+    .timeline-step::before {
+      content: attr(data-step);
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-family: "Noto Serif TC", "PMingLiU", serif;
+      font-size: 1.7rem;
+      color: rgba(35, 71, 51, 0.18);
+      line-height: 1;
+    }
+
+    .timeline-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(121, 136, 99, 0.16);
+      color: var(--forest);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+
+    .metric-card {
+      min-height: 156px;
+    }
+
+    .metric-value {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--forest);
+      font-size: 1.46rem;
+      line-height: 1;
+    }
+
+    .closing-note {
+      display: grid;
+      gap: 12px;
+      align-content: center;
+      min-height: 100%;
+    }
+
+    .closing-note p {
+      font-size: 0.98rem;
+    }
+
+    .platform-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .platform-card {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, rgba(232, 223, 208, 0.5), rgba(255, 255, 255, 0.82));
+      border: 1px solid rgba(35, 49, 38, 0.08);
+    }
+
+    .platform-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--forest);
+      font-size: 1rem;
+    }
+
+    .platform-card span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.72;
+      font-size: 0.94rem;
+    }
+
+    .link-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .link-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(35, 71, 51, 0.08);
+      border: 1px solid rgba(35, 71, 51, 0.12);
+      text-decoration: none;
+      color: var(--forest);
+      font-weight: 700;
+      transition: transform 220ms ease, background 220ms ease;
+    }
+
+    .link-chip:hover {
+      transform: translateY(-2px);
+      background: rgba(35, 71, 51, 0.12);
+    }
+
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(28px) scale(0.985);
+      transition:
+        opacity 700ms cubic-bezier(.22, 1, .36, 1),
+        transform 700ms cubic-bezier(.22, 1, .36, 1);
+      transition-delay: var(--delay, 0ms);
+    }
+
+    [data-reveal].is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .slide-right {
+      transform: translateX(28px);
+    }
+
+    .slide-right.is-visible {
+      transform: translateX(0);
+    }
+
+    .slide-left {
+      transform: translateX(-28px);
+    }
+
+    .slide-left.is-visible {
+      transform: translateX(0);
+    }
+
+    @keyframes grainDrift {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(22px); }
+    }
+
+    @keyframes ringSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: rotate(-1.6deg) translateY(0); }
+      50% { transform: rotate(1.7deg) translateY(-4px); }
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(5deg); }
+    }
+
+    @media (max-width: 1400px) {
+      .hero-grid,
+      .role-strip,
+      .hero-summary,
+      .ribbon,
+      .proof-grid,
+      .pain-grid,
+      .goal-grid,
+      .metric-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .span-3,
+      .span-4,
+      .span-5,
+      .span-6,
+      .span-7,
+      .span-8,
+      .span-9,
+      .span-10,
+      .span-11,
+      .span-12,
+      .span-16 {
+        grid-column: span 16;
+      }
+
+      .hero-grid,
+      .role-strip,
+      .hero-summary,
+      .ribbon,
+      .proof-grid,
+      .pain-grid,
+      .goal-grid,
+      .metric-grid,
+      .timeline-line {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-step {
+        padding-left: 60px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .board {
+        width: min(100vw - 14px, 100%);
+        padding: 12px;
+        border-radius: 24px;
+      }
+
+      .tile,
+      .hero {
+        padding: 18px;
+      }
+
+      .row-card {
+        grid-template-columns: 1fr;
+      }
+
+      .label::after {
+        position: static;
+        display: block;
+        max-width: none;
+        margin-left: 0;
+        margin-top: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <section class="bento">
+      <section class="tile hero span-16 slide-left" data-reveal style="--delay: 0ms;">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="hero-kicker">NYCU Active Learning</div>
+            <h1>從三位主持人的互補經驗出發，打造可落地、可共學、可延續的 AI 與學習科學社群</h1>
+            <p>
+              這份計畫不是從零開始的構想，而是建立在既有工作坊、部署實作、網站整理、Podcast 對外分享與跨域協作經驗上的下一步。
+              我們希望把 AI、RAG、Codex 與研究工具的應用，放回教育研究、人文社會與真實學習情境裡，
+              形成一個能夠持續運作的跨域共學場域。
+            </p>
+            <div class="hero-summary">
+              <div class="hero-chip">
+                <strong>問題導向</strong>
+                <span>從研究、教學與學習現場提出真實需求，再回到工具與工作流設計。</span>
+              </div>
+              <div class="hero-chip">
+                <strong>三方互補</strong>
+                <span>跨域溝通、教學設計與學習支持三條能力線並行，不靠單一角色撐完整場。</span>
+              </div>
+              <div class="hero-chip">
+                <strong>可延續性</strong>
+                <span>每次活動都會留下教材、操作紀錄與可再利用的成果資源。</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-stage" aria-hidden="true">
+            <svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" role="presentation">
+              <defs>
+                <radialGradient id="g1" cx="50%" cy="34%" r="56%">
+                  <stop offset="0%" stop-color="#fff1cf" stop-opacity="0.96"/>
+                  <stop offset="56%" stop-color="#fff1cf" stop-opacity="0.26"/>
+                  <stop offset="100%" stop-color="#fff1cf" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="forestHill" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#5d7359"/>
+                  <stop offset="100%" stop-color="#274032"/>
+                </linearGradient>
+                <linearGradient id="woodHill" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#986947"/>
+                  <stop offset="100%" stop-color="#6a4330"/>
+                </linearGradient>
+              </defs>
+              <circle cx="210" cy="92" r="74" fill="url(#g1)"/>
+              <circle class="wood-ring" cx="210" cy="138" r="104" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="2.4" stroke-dasharray="10 14"/>
+              <circle class="wood-ring alt" cx="210" cy="138" r="126" fill="none" stroke="rgba(185,139,69,0.24)" stroke-width="2.2" stroke-dasharray="12 20"/>
+              <path d="M0 238C56 202 116 198 164 210C206 220 246 246 302 240C342 236 374 218 420 222V320H0Z" fill="url(#forestHill)"/>
+              <path d="M0 252C78 282 138 232 196 242C250 250 282 286 352 278C384 274 402 266 420 258V320H0Z" fill="url(#woodHill)"/>
+              <g class="tree-core">
+                <rect x="198" y="142" width="24" height="84" rx="12" fill="#543625"/>
+                <path d="M210 86L150 178H186L140 232H280L234 178H270L210 86Z" fill="#dce4d1"/>
+                <path d="M210 110L168 182H192L160 220H260L228 182H252L210 110Z" fill="#91a17b"/>
+                <path d="M210 128L184 182H202L182 208H238L220 182H236L210 128Z" fill="#385742"/>
+              </g>
+              <path class="floating-seed" d="M96 102C112 94 128 102 134 120C116 122 102 128 92 144C80 130 82 110 96 102Z" fill="#d8bc74"/>
+              <path class="floating-seed alt" d="M316 118C332 108 350 116 356 134C338 138 324 146 314 162C302 148 304 126 316 118Z" fill="#b8c791"/>
+              <circle cx="118" cy="242" r="5" fill="rgba(255,255,255,0.44)"/>
+              <circle cx="302" cy="224" r="4" fill="rgba(255,255,255,0.34)"/>
+              <circle cx="336" cy="246" r="3.6" fill="rgba(255,255,255,0.26)"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-9" data-reveal style="--delay: 60ms;">
+        <div class="label" data-note="計畫動機與問題意識">Issue</div>
+        <h2>真正的問題不是學生不想學，而是缺少能把工具帶回自己情境的共學場域</h2>
+        <p class="lede">
+          在教育與人文社會領域裡，AI 工具的資訊其實並不缺，真正困難的是如何把工具放進論文、教案、研究設計與專題實作之中。
+          從「聽過」到「真的會用」，中間需要可反覆提問、可一起操作、也可持續修正的學習環境。
+        </p>
+        <div class="quote-box">
+          我們希望建立的不是單次活動，而是一個能夠承接真實問題、支持跨域對話、並把學習成果留下來的社群結構。
+        </div>
+      </section>
+
+      <section class="tile span-7 slide-right" data-reveal style="--delay: 120ms;">
+        <div class="label" data-note="計畫概念與核心主張">Concept</div>
+        <h2>以學習科學為骨架，把 AI、RAG、Codex 與研究工作流重新接回學習現場</h2>
+        <div class="stack-list">
+          <div class="row-card">
+            <div class="head">問題導向</div>
+            <div>從研究與教學現場提出真實需求，再決定工具、任務切分與工作坊設計，而不是先有工具再硬套主題。</div>
+          </div>
+          <div class="row-card">
+            <div class="head">共作實作</div>
+            <div>透過工作坊、定期聚會與小型討論，把抽象技術拆成可以一起做、一起看、一起修的學習流程。</div>
+          </div>
+          <div class="row-card">
+            <div class="head">成果回留</div>
+            <div>每次活動都同步沉澱教材、紀錄與範例，讓社群不只是辦過活動，而是持續擁有下一輪可使用的基礎。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-5" data-reveal style="--delay: 160ms;">
+        <div class="label" data-note="參與對象與角色設定">Who</div>
+        <h2>參與對象</h2>
+        <div class="stack-list">
+          <div class="row-card">
+            <div class="head">核心受益者</div>
+            <div>教育所各組碩博士生，尤其是希望把 AI、資訊工具與研究設計結合起來的學習者。</div>
+          </div>
+          <div class="row-card">
+            <div class="head">延伸對象</div>
+            <div>師培生、跨系大學生、百川學生與其他有需求的交大學生。</div>
+          </div>
+          <div class="row-card">
+            <div class="head">參與角色</div>
+            <div>除了聽眾，也鼓勵成員擔任分享者、主題導讀者與協作教學者，形成社群內部的循環。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-11" data-reveal style="--delay: 210ms;">
+        <div class="label" data-note="學習過程中最常見的卡點">Pain</div>
+        <h2>當前的學習痛點，不在於缺少工具，而在於缺少能把工具轉成能力的環境</h2>
+        <div class="pain-grid">
+          <div class="pain-card">
+            <h3>知道重要，卻不知道怎麼開始</h3>
+            <p>很多學生知道 AI、資料分析與研究工具重要，但真正回到論文、教案或專題時，第一步往往最難跨出去。</p>
+          </div>
+          <div class="pain-card">
+            <h3>課堂有概念，實作還是卡住</h3>
+            <p>正式課程可以提供知識基礎，但較少手把手操作、即時除錯與情境導向練習，學習成果不容易落地。</p>
+          </div>
+          <div class="pain-card">
+            <h3>跨組交流機會有限</h3>
+            <p>研究生日常被課業、論文與工作切碎，即使背景互補，也不一定有穩定空間真正交換經驗與方法。</p>
+          </div>
+          <div class="pain-card">
+            <h3>技術門檻讓不少人停在門外</h3>
+            <p>非資訊背景學生往往不是缺意願，而是缺少適合自己的進入節奏、分層任務與同儕支持機制。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-16" data-reveal style="--delay: 260ms;">
+        <div class="label" data-note="既有基礎與可延伸的執行證據">Experience</div>
+        <h2>過去經驗提供的，不只是履歷上的證據，而是這次計畫能夠直接啟動的工作底盤</h2>
+        <div class="ribbon">
+          <div class="mini-card">
+            <strong>跨域發起</strong>
+            <p>教育所與人社背景共同規劃，意味著技術與學習者視角從一開始就被放進同一個設計框架。</p>
+          </div>
+          <div class="mini-card">
+            <strong>已有原型</strong>
+            <p>`ragworkshop202511` 已累積工作坊內容、專案原型與操作脈絡，這次不需要從空白頁重新起跑。</p>
+          </div>
+          <div class="mini-card">
+            <strong>可實際上線</strong>
+            <p>已有 Vercel 前端部署與系統整理經驗，代表團隊具備把成果做出來、部署出來、展示出來的能力。</p>
+          </div>
+          <div class="mini-card">
+            <strong>已有平台</strong>
+            <p>既有社群網站與內容整理習慣，可以承接活動資訊、學習資源、紀錄與後續擴散。</p>
+          </div>
+        </div>
+        <div class="proof-grid">
+          <div class="proof-card">
+            <h3>RAG 工作坊經驗</h3>
+            <p>先前已規劃與執行 `ragworkshop202511` 相關內容，主題涵蓋 RAG、AI 工具應用、管理介面與教學示範，表示團隊已有可轉化為社群活動的素材與脈絡。</p>
+          </div>
+          <div class="proof-card">
+            <h3>部署與系統整理</h3>
+            <p>既有專案已整理 Next.js 前端部署到 Vercel，以及 n8n / Render 串接流程，顯示團隊能處理從概念到展示的完整鏈條。</p>
+          </div>
+          <div class="proof-card">
+            <h3>內容與網站經營</h3>
+            <p>除了既有專案中的文件與作品展示，也持續透過網站整理活動資訊與內容入口，讓學習成果不只留在單次現場。</p>
+          </div>
+          <div class="proof-card">
+            <h3>Podcast 對外分享</h3>
+            <p>`Joey 學習科學研究小窩` 持續以 Podcast 形式整理學習科學、教育科技與研究思考歷程，代表團隊已有穩定對外分享、知識轉譯與公共敘事的經驗。</p>
+          </div>
+          <div class="proof-card">
+            <h3>協作平台與內容入口</h3>
+            <p>既有 Google Sites 社群網站可作為協作平台與對外入口，承接活動資訊、學習資源、成果紀錄與後續延伸，讓內容不只停留在單場活動。</p>
+          </div>
+          <div class="proof-card">
+            <h3>經驗如何轉成優勢</h3>
+            <p>這些既有經驗讓本計畫能更快對準主題、更穩定安排活動節奏，也更容易在每場活動後沉澱成可重用的成果。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-16" data-reveal style="--delay: 310ms;">
+        <div class="label" data-note="三位主持人的互補角色配置">Team</div>
+        <h2>三位主持人的角色不是平均分配，而是對應不同工作核心的互補配置</h2>
+        <div class="role-strip">
+          <div class="role-card">
+            <div class="role-badge">申請人 A</div>
+            <span class="person">古思旂（Joey）｜教育研究所數位學習組</span>
+            <span class="role-focus">跨域溝通與社群連結主責</span>
+            <p>具 Podcaster 經驗，長期與不同領域對話，擅長提問、議題梳理與知識轉譯。負責跨域需求蒐集、社群議題策展、外部分享者溝通與跨領域合作協調，確保活動主題貼近不同背景參與者的實際需求。</p>
+          </div>
+          <div class="role-card">
+            <div class="role-badge">申請人 B</div>
+            <span class="person">劉鎮臺（Jeffery）｜教育研究所數位學習組</span>
+            <span class="role-focus">教學實務與課程設計主責</span>
+            <p>具中學資訊教育教學經驗，也有補教資訊教學相關經歷。負責工作坊課程設計、教材結構化、教學流程安排與學習評量規劃，將 AI 與資訊工具轉化為可學、可做、可驗收的教學任務。</p>
+          </div>
+          <div class="role-card">
+            <div class="role-badge">申請人 C</div>
+            <span class="person">林俊維｜人文社會學系</span>
+            <span class="role-focus">跨域觀點與內容審視主責</span>
+            <p>具跨域學習者視角，能掌握非資訊本科生在工具採用、知識門檻與理解方式上的實際困難。主要參與跨域討論、內容審視與需求回看，協助確認整體活動設計不會只停留在技術者視角。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-8" data-reveal style="--delay: 340ms;">
+        <div class="label" data-note="運作方式與活動設計">Action</div>
+        <h2>運作模式</h2>
+        <div class="stack-list">
+          <div class="row-card">
+            <div class="head">定期聚會</div>
+            <div>每月至少一次，以研究問題討論、學術經驗交流、AI 工具分享與讀書會導讀建立穩定互動節奏。</div>
+          </div>
+          <div class="row-card">
+            <div class="head">主題工作坊</div>
+            <div>依需求安排 1 至 3 場實作型活動，如 Agent / Codex、RAG、資料處理與研究工具操作等。</div>
+          </div>
+          <div class="row-card">
+            <div class="head">學習支持</div>
+            <div>以活動後回饋、跨域討論與內容修正，讓不同背景成員都能找到適合自己的進入方式。</div>
+          </div>
+          <div class="row-card">
+            <div class="head">共同檢核</div>
+            <div>三方主持人依參與回饋與活動紀錄持續調整設計，形成可優化的社群運作循環。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-8" data-reveal style="--delay: 390ms;">
+        <div class="label" data-note="六個月分階段推進節奏">Timeline</div>
+        <h2>六個月推進節奏</h2>
+        <div class="timeline-rail">
+          <div class="timeline-line">
+            <div class="timeline-step" data-step="01">
+              <div class="timeline-tag">啟動與盤點</div>
+              <h3>第 1 個月</h3>
+              <p>以社群聚會試行、需求蒐集與主題盤整為主，完成初步參與者輪廓與活動方向確認。</p>
+            </div>
+            <div class="timeline-step" data-step="02">
+              <div class="timeline-tag">深化共學</div>
+              <h3>第 2 至 5 個月</h3>
+              <p>固定辦理主題聚會與工作坊，將 AI / RAG / Codex / 研究工具帶入真實學習與研究情境，鼓勵產出小型成果。</p>
+            </div>
+            <div class="timeline-step" data-step="03">
+              <div class="timeline-tag">整合擴散</div>
+              <h3>第 6 個月</h3>
+              <p>整理活動紀錄、教材講義、案例與回饋，沉澱成社群資源庫與下一輪可延續的基礎。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-10" data-reveal style="--delay: 430ms;">
+        <div class="label" data-note="能力提升、成果累積與可檢核輸出">Result</div>
+        <h2>預期成果</h2>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <span class="metric-value">至少 6 場定期聚會</span>
+            <h3>交流節奏穩定化</h3>
+            <p>建立可持續的跨組交流與共學機制，不讓互動只停留在單次活動。</p>
+          </div>
+          <div class="metric-card">
+            <span class="metric-value">1 至 3 場實作工作坊</span>
+            <h3>技術主題落地化</h3>
+            <p>將 Agent / Codex、RAG、資料處理與研究工具導入真實任務。</p>
+          </div>
+          <div class="metric-card">
+            <span class="metric-value">50 人次以上參與</span>
+            <h3>參與規模務實可行</h3>
+            <p>以符合團隊節奏的規模累積穩定參與，確保品質與互動深度。</p>
+          </div>
+          <div class="metric-card">
+            <span class="metric-value">1 套資源庫 + 5 件示範</span>
+            <h3>成果可留存</h3>
+            <p>整理簡報、紀錄與案例，讓後續成員可以直接接續使用與擴散。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile span-6" data-reveal style="--delay: 480ms;">
+        <div class="label" data-note="既有平台與對外資訊延伸">Link</div>
+        <h2>Podcast、協作平台與對外延伸</h2>
+        <div class="closing-note">
+          <p>這份計畫的價值，不只是活動是否辦成，而是能否把工作坊、教學設計、技術實作與跨域支持變成可延續的社群方法。</p>
+          <p>Podcast 提供對外分享與知識轉譯的出口，協作平台則承接活動資訊、資源連結與成果沉澱，讓社群從一開始就具備被看見、被記錄與被延續的條件。</p>
+          <div class="platform-stack">
+            <div class="platform-card">
+              <strong>Podcast：知識轉譯與公共敘事</strong>
+              <span>透過公開內容分享，把學習科學、教育科技與研究反思轉成更多人能進入的語言。</span>
+            </div>
+            <div class="platform-card">
+              <strong>協作平台：內容承接與活動延伸</strong>
+              <span>以既有網站作為社群入口，持續整理活動資訊、資源連結與成果紀錄，讓每次活動都能留下後續使用的基礎。</span>
+            </div>
+          </div>
+          <div class="link-list">
+            <a class="link-chip" href="https://open.spotify.com/show/2R9xUw8OJbN8WKNR5jYeVc" target="_blank" rel="noreferrer">Podcast</a>
+            <a class="link-chip" href="https://sites.google.com/view/infoactivenycu/%E9%A6%96%E9%A0%81" target="_blank" rel="noreferrer">協作平台</a>
+            <a class="link-chip" href="https://202511ragw.vercel.app/" target="_blank" rel="noreferrer">RAG 工作坊 Demo</a>
+            <a class="link-chip" href="https://github.com/jeffery8910/ragworkshop202511" target="_blank" rel="noreferrer">GitHub Repo</a>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const items = document.querySelectorAll("[data-reveal]");
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.16,
+        rootMargin: "0px 0px -40px 0px"
+      });
+
+      items.forEach((item) => io.observe(item));
+    })();
+  </script>
+</body>
+</html>
